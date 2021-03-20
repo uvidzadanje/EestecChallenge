@@ -1,0 +1,39 @@
+# Always set these headers.
+Header always set Access-Control-Allow-Origin "*"
+Header always set Access-Control-Allow-Methods "POST, GET, OPTIONS, DELETE, PUT"
+Header always set Access-Control-Max-Age "1000"
+Header always set Access-Control-Allow-Headers "x-requested-with, Content-Type, origin, authorization, accept, client-security-token, X-PINGOTHER"
+Header add Access-Control-Allow-Headers "X-Custom-Header"
+
+# Added a rewrite to respond with a 200 SUCCESS on every OPTIONS request.
+RewriteEngine On
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]
+
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP_HOST} ^coloniams\.com$
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI}
+
+# p su sa imenom, r su bez imena
+# pages su stranice koje se učitavaju bez korišćenja prozor funkcija i slično
+
+RewriteRule ^mng/([^/]+)/ index.php?mod=mng [L,QSA]
+RewriteRule ^mod/([^/]+)/?$ index.php?mod=$1 [L,QSA]
+RewriteRule ^mod/([^/]+)/([^/]+)/?$ index.php?mod=$1&page=$2 [L,QSA]
+RewriteRule ^mod/([^/]+)/([^/]+)/([^/]+)/?$ index.php?mod=$1&page=$2&subpage=$3 [L,QSA]
+
+RewriteRule ^profil/([^/]+) index.php?objekat=44&lokacija=korisnik&param=$1&str=0 [L]
+
+RewriteRule ^p/([^/]+)/([^/]+)/([^/]+)/? index.php?objekat=$1&ime=$2&loc=$3 [L]
+RewriteRule ^p/([^/]+)/([^/]+)/? index.php?objekat=$1&ime=$2 [L]
+RewriteRule ^p/([^/]+)/? index.php?objekat=$1 [L]
+
+RewriteRule ^r/([^/]+)/([^/]+)/([^/]+)/? index.php?objekat=$1&lokacija=$2&param=$3 [L]
+RewriteRule ^r/([^/]+)/([^/]+)/? index.php?objekat=$1&lokacija=$2 [L]
+RewriteRule ^r/([^/]+)/? index.php?objekat=$1 [L]
+
+# /p/46/vojna-akademija/ - bez parametara, gleda se samo drugi broj - objekat=$1;prozor_refresh();
+# /r/46/2/3/vojna-akademija - sa parametrima $1= objekat , $2 param, $3 lokacija
+
+ErrorDocument 404 /404.php
+
