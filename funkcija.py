@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup
 import kwargs
 import args
 import regex
+import socket
+import json
 
 #param;
 #konacni_podaci;
@@ -34,11 +36,32 @@ def opswat():
 
     ceo_tekst=requests.get(link).text
     soup=BeautifulSoup(ceo_tekst,'lxml')
+    
+    # pod = soup.select("#categories")
+    # print(pod)
 
-    pod=soup.find_all('th')
-    print(pod)
+def abuseipdb(tip, value):
+    if(tip=="domain"):
+        ip_addr = socket.gethostbyname(value)
+    elif (tip=="ipv4"):
+        ip_addr = value
+    else:
+        return
 
-opswat()
+    url = "https://www.abuseipdb.com/check/" + ip_addr
+    response = requests.get(url).text
+    soup = BeautifulSoup(response,"lxml")
+    percentage = int(soup.select("div > p > b")[4].text[:-1]) / 10
+    usage = soup.select(".table > tr > td")[1]
+
+    return_value = {
+        "rate" : percentage,
+        "usage" : usage.text
+    }
+
+    return return_value
+
+# print(abuseipdb("ipv4","172.217.10.142"))
   
 
 
