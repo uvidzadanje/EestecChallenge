@@ -3926,7 +3926,7 @@ input[type="button"].btn-block {
 
 .card-body {
   flex: 1 1 auto;
-  padding: 1.25rem; }
+  /*padding: 1.25rem;*/ }
 
 .card-title {
   margin-bottom: 0.75rem; }
@@ -5359,12 +5359,13 @@ button.bg-success:focus {
   background-color: #33a340 !important; }
 
 .bg-info {
-  background-color: #09ebaf !important; }
+  background-color: #502c6c !important;
+  color: white; }
 
 a.bg-info:hover, a.bg-info:focus,
 button.bg-info:hover,
 button.bg-info:focus {
-  background-color: #07ba8a !important; }
+  background-color: #502c6c !important; }
 
 .bg-warning {
   background-color: #ffde03 !important; }

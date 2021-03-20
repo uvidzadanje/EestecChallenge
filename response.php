@@ -2,7 +2,7 @@
 
 require_once "core/core.php";
 
-$parametar = $_POST['parametar'];
+$parametar = trim($_POST['parametar']);
 
 $type = getTypeInput($parametar);
 
@@ -61,17 +61,44 @@ if($response_metadefender != NULL){
 
 <?php } else if ($type == 'hash'){ ?>
 
-<div class="jumbotron p-5 jumbotron-fluid bg-warning">
+<div class="jumbotron p-5 jumbotron-fluid" style="background-color: #be473c;">
 	<div class="container h-100">
 		<div class="row justify-content-between align-items-center text-md-center text-lg-left">
 			<div class="col-lg-9">
-				<h5 class="font-weight-light text-dark"><?php echo $response_metadefender['threat_name']; ?></h5>
+				<h3 style="color:white;"><b>Pažnja!</b></h3>
+				<h5 class="font-weight-light" style="color:white;"><b><?php echo @$response_metadefender['threat_name'];  ?></b></h5>
 			</div>
 			<div class="col-lg-3 text-md-center text-lg-right mt-4 mb-4">
-				<a href="#" class="btn btn-lg btn-outline-dark">Call to action</a>
+				<a href="#" class="btn btn-lg btn-primary" data-toggle="modal" data-target="#info">Informacije</a>
 			</div>
 		</div>
 	</div>
+</div>
+
+<div id="info" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-lg">
+
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Detaljne informacije</h4>
+      </div>
+      <div class="modal-body">
+        <p>MD5: <?php echo $response_metadefender['file_info']['md5']; ?></p>
+        <p>SHA1: <?php echo $response_metadefender['file_info']['sha1']; ?></p>
+        <p>SHA256: <?php echo $response_metadefender['file_info']['sha256']; ?></p>
+        <p>SHA1: <?php echo $response_metadefender['file_info']['sha1']; ?></p>
+
+        <p>Kategorija: <?php echo $response_metadefender['file_info']['file_type_category']; ?></p>
+        <p>Tip: <?php echo $response_metadefender['file_info']['file_type_description']; ?></p>
+        <p>Ekstenzija: <?php echo $response_metadefender['file_info']['file_type_extension']; ?></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Zatvori</button>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 		<div class="card border-0 shadow-sm">
@@ -113,7 +140,9 @@ if($response_metadefender != NULL){
 	} 
 }
 ?>
-
+<div style="position:fixed; bottom:20px;left:20px;">
+	<a href="/" target="_blank"><img class="rounded-circle shadow-lg" src="templates/assets/img/back.png" width="70" data-toggle="tooltip" data-placement="top" title="" data-original-title="Buy me a coffee!"></a>
+</div>
 
 
 
