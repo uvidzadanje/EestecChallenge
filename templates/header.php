@@ -23,7 +23,7 @@
  
 <nav class="topnav navbar navbar-expand-lg navbar-dark bg-black fixed-top">
 <div class="container-fluid">
-	<a class="navbar-brand" href="/"><img style="width: 100px" src="/templates/assets/img/EC_logo.png" alt="EestecChallenge"></a>
+	<a class="navbar-brand" href="/"><img style="width: 100px" src="./templates/assets/img/EC_logo.png" alt="EestecChallenge"></a>
 	<button class="navbar-toggler collapsed" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
 	<span class="navbar-toggler-icon"></span>
 	</button>
