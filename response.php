@@ -61,6 +61,19 @@ if($response_metadefender != NULL){
 
 <?php } else if ($type == 'hash'){ ?>
 
+<div class="jumbotron p-5 jumbotron-fluid bg-warning">
+	<div class="container h-100">
+		<div class="row justify-content-between align-items-center text-md-center text-lg-left">
+			<div class="col-lg-9">
+				<h5 class="font-weight-light text-dark"><?php echo $response_metadefender['threat_name']; ?></h5>
+			</div>
+			<div class="col-lg-3 text-md-center text-lg-right mt-4 mb-4">
+				<a href="#" class="btn btn-lg btn-outline-dark">Call to action</a>
+			</div>
+		</div>
+	</div>
+</div>
+
 		<div class="card border-0 shadow-sm">
 			<div class="card-header bg-info border-0 pt-4 pb-4">
 				<h4 class="my-0 font-weight-normal">Izvršili smo proveru na ispod navedenim antivirusima, izveštaj se nalazi ispod</h4>
