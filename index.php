@@ -19,7 +19,7 @@ include "templates/header.php";
                     <a href="#search" class="btn btn-lg btn-outline-white btn-round">Pretraži</a>
                 </div>
                 <div class="col align-self-bottom align-items-right text-right h-max-380 h-xl-560 position-relative z-index-1">
-                    <img src="http://www.pngmart.com/files/7/Cyber-Security-Transparent-PNG.png" class="rounded img-fluid">
+                    <img src="/templates/assets/img/logos.png" class="rounded img-fluid">
                 </div>
             </div>
         </div>

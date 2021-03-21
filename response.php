@@ -29,7 +29,6 @@ $JSON_ipqualityscore = makeRequest($getURL, 'GET');
 $response_ipqualityscore = json_decode($JSON_ipqualityscore, true);
 //
 
-
 // # Izvlacimo podatke sa abuseipdb.com
 $JSON_abuseipdb = getData('abuseipdb', $type, $parametar);
 $response_abuseipdb = json_decode($JSON_abuseipdb, true);
@@ -70,7 +69,28 @@ if($type == 'domain' || $type == 'ip'){
 		$description = "Nebezbedno!";
 	}	
 
+} else {
+
+	$rate = round((($response_metadefender['scan_results']['total_detected_avs']/($response_metadefender['scan_results']['total_avs']))* 10));
+
+	if(in_array($rate, [1, 2])){
+		$color = "green";
+		$description = "Bez vidljivih pretnji - bezbedno!";
+	} else if (in_array($rate, [3, 4, 5])){
+		$color = "#bbbb28";
+		$description = "Sa pojedinim pretnjama - delimično bezbedno!";
+	} else {
+		$color = "red";
+		$description = "Nebezbedno!";
+	}	
+
 }
+
+	$json[] = $response_metadefender;
+	$json[] = $response_ipqualityscore;
+	$json[] = $response_abuseipdb;
+	
+	$jsonExport = json_encode($json, JSON_PRETTY_PRINT);
 
 include 'templates/header.php';
 
@@ -81,8 +101,8 @@ include 'templates/header.php';
 <div class="container">
 
 <?php 
-
 	if($type == 'domain' || $type == 'ip'){ 
+
 ?>
 
 		<div class="row">
@@ -116,9 +136,10 @@ include 'templates/header.php';
 				<div class="iconbox iconmedium rounded-circle mr-2" style="color: <?php echo $color; ?>">
 					<?php echo $rate; ?>
 				</div>
+				<p>/30</p>
 				<div class="media-body">
-					<h5>Ocena rizika</h5>
-					<p class="text-muted">
+					<h5 style="margin-bottom:-2px; margin-top:6px; margin-left:5px;">Ocena rizika</h5>
+					<p class="text-muted" style="margin-left:5px;">
 						 <?php echo $description; ?>
 					</p>
 				</div>
@@ -178,7 +199,6 @@ include 'templates/header.php';
 			</div>
 		</div>
 
-
 		<?php if($response_metadefender != NULL){ ?>
 
 		<div class="card border-0 shadow-sm">
@@ -218,7 +238,7 @@ include 'templates/header.php';
 		<?php } ?>
 
 		<?php if($type == 'domain'){ ?>
-		<div class="col-lg-12" style="padding:0px;">
+		<div class="col-lg-12" style="padding:0px; margin-top:20px;">
         <div class="card flex-md-row mb-4 box-shadow" style="padding: 20px;">
             <div class="card-body d-flex flex-column">
                 <h3 class="d-inline-block mb-2 text-purple"><center>Screenshot domena</center></h3>
@@ -232,7 +252,22 @@ include 'templates/header.php';
 
 <?php } else if ($type == 'hash'){ ?>
 
-		<?php if($response_metadefender != NULL){ ?>
+		<?php if($response_metadefender != NULL && !empty($response_metadefender['file_info']['md5'])){ ?>
+
+			<div class="col-lg-5">
+			<div class="media mt-3">
+				<div class="iconbox iconmedium rounded-circle mr-2" style="color: <?php echo $color; ?>">
+					<?php echo $rate; ?>
+				</div>
+				<p>/10</p>
+				<div class="media-body">
+					<h5 style="margin-bottom:-2px; margin-top:6px; margin-left:5px;">Ocena rizika</h5>
+					<p class="text-muted" style="margin-left:5px;">
+						 <?php echo $description; ?>
+					</p>
+				</div>
+			</div>
+		</div>
 
 		<div class="jumbotron p-5 jumbotron-fluid" style="background-color: #be473c;">
 			<div class="container">
@@ -319,9 +354,15 @@ include 'templates/header.php';
 }
 ?>
 
+<?php if($type == 'invalid' || $response_metadefender['file_info']['md5'] == NULL && $type == 'hash'){ ?>
+
+	<h2 style="padding-top: 100px; padding-bottom: 100px;">Trenutno nemamo podatke o unesenom parametru ili je on nevalidan.</h2>
+
+<?php } ?>
+
 
 	<div style="position:fixed; bottom:20px;left:20px;">
-		<a href="/" target="_blank"><img class="rounded-circle shadow-lg" src="templates/assets/img/back.png" width="70" data-toggle="tooltip" data-placement="top"></a>
+		<a href="/"><img class="rounded-circle shadow-lg" src="templates/assets/img/back.png" width="70" data-toggle="tooltip" data-placement="top"></a>
 	</div>
 </div>
 
