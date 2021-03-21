@@ -23,27 +23,54 @@ $JSON_metadefender = makeRequest($getURL, 'GET', ['apikey: c6043881db3c375a41da5
 $response_metadefender = json_decode($JSON_metadefender, true);
 //
 
+// # Izvlacimo podatke sa ipqualityscore.com
+$getURL = 'https://ipqualityscore.com/api/json/ip/LSxHMHD1cmyneVAsdyGjaH4BH2nwWLYA/'.$parametar;
+$JSON_ipqualityscore = makeRequest($getURL, 'GET');
+$response_ipqualityscore = json_decode($JSON_ipqualityscore, true);
+//
+
+
 // # Izvlacimo podatke sa abuseipdb.com
 $JSON_abuseipdb = getData('abuseipdb', $type, $parametar);
 $response_abuseipdb = json_decode($JSON_abuseipdb, true);
 //
 
 // # Izvlacimo podatke sa securitytrails.com
-$response_securitytrails = new SecurityTrails("28z7Q0NXFOYrbw5kzN8QYat4m2ul5XWF");
+$response_securitytrails = new SecurityTrails("qYBHatqjiJ0XqudU1LdAn62pKzropP9V");
+//
 
 if($type == 'domain'){
 	$status = json_decode($response_securitytrails->getDomain($parametar), true);
+
+	// # Kreiranje screenshot slike za navedeni domen
+	$screenshot = "https://api.screenshotmachine.com?key=7a043c&url=$parametar&dimension=1024x768";
 }
 
 // # Racunanje konacnog rizicnog skora
-$rate_abuseipdb = $response_abuseipdb['rate'];
-
 if($type == 'domain' || $type == 'ip'){ 
+
+	$rate_abuseipdb = $response_abuseipdb['rate'];
+
 	if($response_metadefender['lookup_results']['detected_by'] == 0)
 		$response_metadefender['lookup_results']['detected_by'] = 1;
 	$rate_metadefender = round((($response_metadefender['lookup_results']['detected_by']/sizeof($response_metadefender['lookup_results']['sources']))* 10));
-}
 
+	$rate_ipqualityscore = round($response_ipqualityscore['fraud_score'] / 10 / 2);
+
+	$rate = $rate_abuseipdb + $rate_metadefender + $rate_ipqualityscore;
+
+	if(in_array($rate, [1, 2, 3, 4, 5, 6])){
+		$color = "green";
+		$description = "Bez vidljivih pretnji - bezbedno!";
+	} else if (in_array($rate, [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18])){
+		$color = "#bbbb28";
+		$description = "Sa pojedinim pretnjama - delimično bezbedno!";
+	} else {
+		$color = "red";
+		$description = "Nebezbedno!";
+	}	
+
+}
 
 include 'templates/header.php';
 
@@ -57,20 +84,23 @@ include 'templates/header.php';
 
 	if($type == 'domain' || $type == 'ip'){ 
 ?>
-	<?php if($response_abuseipdb == NULL){ ?>
 
+		<div class="row">
 
-		<div class="col-lg-6" style="padding:0px;">
+		<div class="col-lg-6" style="padding:0px; margin-left:15px;">
         <div class="card flex-md-row mb-4 box-shadow" style="padding: 20px;">
             <div class="card-body d-flex flex-column align-items-start">
                 <strong class="d-inline-block mb-2 text-purple">Korisne informacije</strong>
                 	<div class="mb-1 card-muted">
-                    	<b>Primena: </b> <span class="text-muted"><?php echo $response_abuseipdb['usage']; ?></span>
+                    	<b>Primena: </b> <span class="text-muted"><?php echo ($response_abuseipdb['usage'] == NULL) ? 'Nepoznato' : $response_abuseipdb['usage']; ?>
+                    	</span>
                     	<?php if($type == 'domain'){ ?>
                     		<br>
                     		<b>Broj subdomena: </b> <span class="text-muted"><?php echo $status['subdomain_count']; ?></span>
                     		<br>
                     		<b>Hostname: </b> <span class="text-muted"><?php echo $status['hostname']; ?></span>
+                    		<br>
+                    		<b>IP Adresa: </b> <span class="text-muted"><?php echo gethostbyname($parametar); ?></span>
                     		<br>
                     		<b>Endpoint: </b> <span class="text-muted"><?php echo $status['endpoint']; ?></span>
                     		<br>
@@ -81,7 +111,73 @@ include 'templates/header.php';
         	</div>
 		</div>
 
-	<?php } ?>
+		<div class="col-lg-5">
+			<div class="media mt-3">
+				<div class="iconbox iconmedium rounded-circle mr-2" style="color: <?php echo $color; ?>">
+					<?php echo $rate; ?>
+				</div>
+				<div class="media-body">
+					<h5>Ocena rizika</h5>
+					<p class="text-muted">
+						 <?php echo $description; ?>
+					</p>
+				</div>
+
+			</div>
+		</div>
+
+		</div>
+
+		<div class="row">
+			<div class="col-lg-7" style="padding:0px; margin-left:15px;">
+				<div class="card flex-md-row mb-4 box-shadow" style="padding: 20px;">
+					<div class="card-body d-flex flex-column align-items-start">
+						<strong class="d-inline-block mb-2 text-purple">Detaljne informacije</strong>
+						<div class="mb-1 card-muted">
+							<b>Country Code: </b> <span class="text-muted"><?php echo $response_ipqualityscore['country_code']; ?></span>
+							<br>
+							<b>Region: </b> <span class="text-muted"><?php echo $response_ipqualityscore['region']; ?></span>
+							<br>
+							<b>City: </b> <span class="text-muted"><?php echo $response_ipqualityscore['city']; ?></span>
+							<br>
+							<b>ISP: </b> <span class="text-muted"><?php echo $response_ipqualityscore['ISP']; ?></span>
+							<br>
+							<b>Organization: </b> <span class="text-muted"><?php echo $response_ipqualityscore['organization']; ?></span>
+							<br>
+							<b>Timezone: </b> <span class="text-muted"><?php echo $response_ipqualityscore['country_code']; ?></span>
+							<br>
+							<b>Country Code: </b> <span class="text-muted"><?php echo $response_ipqualityscore['country_code']; ?></span>
+							<br>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-4" style="padding:0px; margin-left:15px;">
+				<div class="card flex-md-row mb-4 box-shadow" style="padding: 20px;">
+					<div class="card-body d-flex flex-column align-items-start">
+						<strong class="d-inline-block mb-2 text-purple">Karakteristike parametra</strong>
+						<div class="mb-1 card-muted">
+							<b>Mobile: </b> <span class="text-muted"><?php echo ($response_ipqualityscore['mobile'] == true) ? '<i class="fas fa-check" style="color:green;"></i>' : '<i class="fas fa-times" style="color:red;"></i>'; ?></span>
+							<br>
+							<b>Proxy: </b> <span class="text-muted"><?php echo ($response_ipqualityscore['proxy'] == true) ? '<i class="fas fa-check" style="color:green;"></i>' : '<i class="fas fa-times" style="color:red;"></i>'; ?></span>
+							<br>
+							<b>VPN: </b> <span class="text-muted"><?php echo ($response_ipqualityscore['vpn'] == true) ? '<i class="fas fa-check" style="color:green;"></i>' : '<i class="fas fa-times" style="color:red;"></i>'; ?></span>
+							<br>
+							<b>Tor: </b> <span class="text-muted"><?php echo ($response_ipqualityscore['tor'] == true) ? '<i class="fas fa-check" style="color:green;"></i>' : '<i class="fas fa-times" style="color:red;"></i>'; ?></span>
+							<br>
+							<b>Active VPN: </b> <span class="text-muted"><?php echo ($response_ipqualityscore['active_vpn'] == true) ? '<i class="fas fa-check" style="color:green;"></i>' : '<i class="fas fa-times" style="color:red;"></i>'; ?></span>
+							<br>
+							<b>Active TOR: </b> <span class="text-muted"><?php echo ($response_ipqualityscore['active_tor'] == true) ? '<i class="fas fa-check" style="color:green;"></i>' : '<i class="fas fa-times" style="color:red;"></i>'; ?></span>
+							<br>
+							<b>Bot Status: </b> <span class="text-muted"><?php echo ($response_ipqualityscore['bot_status'] == true) ? '<i class="fas fa-check" style="color:green;"></i>' : '<i class="fas fa-times" style="color:red;"></i>'; ?></span>
+							<br>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
 
 		<?php if($response_metadefender != NULL){ ?>
 
@@ -121,12 +217,25 @@ include 'templates/header.php';
 		</div>
 		<?php } ?>
 
+		<?php if($type == 'domain'){ ?>
+		<div class="col-lg-12" style="padding:0px;">
+        <div class="card flex-md-row mb-4 box-shadow" style="padding: 20px;">
+            <div class="card-body d-flex flex-column">
+                <h3 class="d-inline-block mb-2 text-purple"><center>Screenshot domena</center></h3>
+                	<div class="mb-1 card-muted">
+                    		<center><img src="<?php echo $screenshot; ?>" class="img-fluid"></center>
+                	</div>
+            	</div>
+        	</div>
+		</div>
+		<?php }?>
+
 <?php } else if ($type == 'hash'){ ?>
 
 		<?php if($response_metadefender != NULL){ ?>
 
 		<div class="jumbotron p-5 jumbotron-fluid" style="background-color: #be473c;">
-			<div class="container h-100">
+			<div class="container">
 				<div class="row justify-content-between align-items-center text-md-center text-lg-left">
 					<div class="col-lg-9">
 						<h3 style="color:white;"><b>Pažnja!</b></h3>
@@ -200,7 +309,9 @@ include 'templates/header.php';
 						</tbody>
 					</table>
 				</ul>
+
 			</div>
+
 		</div>
 
 <?php 

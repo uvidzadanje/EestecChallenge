@@ -38,7 +38,7 @@ function getTypeInput ($param) {
  *
 */
 
-function makeRequest ($url, $method, $headers, $timeout = 60) {
+function makeRequest ($url, $method, $headers = '', $timeout = 60) {
 
 	$ch = curl_init();
 
@@ -50,7 +50,7 @@ function makeRequest ($url, $method, $headers, $timeout = 60) {
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
 	curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);                                                                                                                   
+	@curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);                                                                                                                   
 	$response = curl_exec($ch);
 	curl_close($ch);
 
