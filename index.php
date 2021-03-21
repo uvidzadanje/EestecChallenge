@@ -5,6 +5,7 @@ require_once "core/core.php";
 
 include "templates/header.php";
 
+
 ?>
 
 
@@ -34,7 +35,6 @@ include "templates/header.php";
             <div class="col-md-6">
                 <div class="form-group has-icon-left form-control-name">
                     <input type="text" name="parametar" id="name" required="" class="form-control" placeholder="Domen, IP adresa, Hash...">
-                    <p style="font-size:12px;">* Domen unosite http/https parametara (domen.com, poddomen.domen.com...)</p>
                 </div>
             </div>
             <div class="col-md-2 mb-3" id="#search">

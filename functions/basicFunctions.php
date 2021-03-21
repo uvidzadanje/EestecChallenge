@@ -44,7 +44,7 @@ function makeRequest ($url, $method, $headers, $timeout = 60) {
 
 	curl_setopt($ch, CURLOPT_URL, $url);
 	curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method); 
-	curl_setopt($ch, CURLOPT_POST, true);
+	//curl_setopt($ch, CURLOPT_POST, true);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
@@ -58,6 +58,26 @@ function makeRequest ($url, $method, $headers, $timeout = 60) {
 
 }
 
+
+
+
+/**
+ * Funkcija koja uzima podatke iz predefinisane Python skripte 
+ *
+ * @param string $tip Koji je tip parametra
+ * @param string $param Prosledjivanje parametra
+ *
+ * @return string
+ *
+*/
+
+function getData ($moduleName, $tip, $param) {
+
+	$param = escapeshellcmd($param);
+
+	return shell_exec(getcwd().'/module.sh '.$moduleName.' '.$tip.' '.$param);
+
+}
 
 
 ?>
